@@ -2,7 +2,7 @@ import React from 'react'
 import doubleCheck from '../assets/done_all.svg'
 import Avatar from './Avatar'
 
-export default function ContactBox({ contact, setContactSelected, messages, onClick }) {
+export default function ContactBox({ contact, setContactSelected, messages, onClick, setMessage }) {
     const maxTs = messages.length!==0 && Math.max(...messages.map((m) => (new Date(m.date)).getTime()))
     const lastMsg = messages.length!==0 && messages.find((m) =>(new Date(m.date)).getTime() === maxTs)
 
@@ -10,7 +10,7 @@ export default function ContactBox({ contact, setContactSelected, messages, onCl
         return text.length > length ? `${text.substring(0, length)} ...` : text
     }
     return (
-        <div className="contact-box" onClick={() => {setContactSelected(contact);onClick()}}>
+        <div className="contact-box" onClick={() => {setContactSelected(contact);onClick();setMessage("")}}>
             <Avatar user={contact} />
             <div className="right-section">
                 <div className="contact-box-header">

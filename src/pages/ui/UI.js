@@ -39,6 +39,8 @@ const UI = () => {
   const { firestore } = firebase;
   const [open, setopen] = useState(false);
 
+
+
   useEffect(() => {
     firestore()
       .collection("whatsapp-users")
@@ -90,7 +92,26 @@ const UI = () => {
   useEffect(() => {
     const currContact = data.find((d) => d.contact.id === contactSelected.id);
     setCurrentMessages((currContact && currContact.messages) || []);
-    filterContacts(data, search);
+    const filterContacts = () => {
+      let result = data.filter(({ contact }) => {
+        return (
+          !search || contact.name.toLowerCase().includes(search.toLowerCase())
+        );
+      });
+      let newChat = result.filter(d=>d.messages.length===0)
+      let oldChat = result.filter(d=>d.messages.length!==0)
+  
+      let result1 =  oldChat.sort((a,b)=>{
+        const maxTsA = Math.max(...a.messages.map((m) => (new Date(m.date)).getTime()))
+        const lastMsgA = a.messages.find((m) =>(new Date(m.date)).getTime() === maxTsA)
+        const maxTsB = Math.max(...b.messages.map((m) => (new Date(m.date)).getTime()))
+        const lastMsgB = b.messages.find((m) =>(new Date(m.date)).getTime() === maxTsB)
+        return (new Date(lastMsgB.date)) - (new Date(lastMsgA.date))
+      })
+      let finalChat = result1.concat(newChat)
+      setFilterContacts(finalChat);
+    };
+    filterContacts();
   }, [contactSelected, data, search]);
 
   const pushMessage = () => {
@@ -113,27 +134,7 @@ const UI = () => {
     setMessage("");
   };
 
-  const filterContacts = (data, search) => {
-    let result = data.filter(({ contact }) => {
-      return (
-        !search || contact.name.toLowerCase().includes(search.toLowerCase())
-      );
-    });
-    // let newChat = result.filter(d=>d.messages.length===0)
-    // let oldChat = result.filter(d=>d.messages.length!==0)
 
-    // let result1 =  oldChat.sort((a,b)=>{
-    //   (new Date(a.messages[0].date)).getTime()
-    //   // console.log(a.messages[0]?.date)
-    //   // console.log(b.messages[0]?.date)
-
-
-    //   return (new Date(b.messages[0]?.date || Date.now())).getTime() - (new Date(a.messages[0]?.date || Date.now())).getTime()
-    // })
-    // let finalChat = result1.concat(newChat)
-    // setFilterContacts(result1);
-    setFilterContacts(result)
-  };
 
   const logout = () => {
     firebase.auth().signOut();
@@ -181,6 +182,7 @@ const UI = () => {
               contact={contact}
               key={contact.id}
               setContactSelected={setContactSelected}
+              setMessage={setMessage}
               messages={messages}
               onClick={() => toggleEmojiTray(false)}
             />
