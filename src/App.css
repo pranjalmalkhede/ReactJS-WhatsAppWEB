@@ -1,0 +1,31 @@
+.App {
+  background-color: #00bfa5;
+  height:39vh;
+  width:100vw;
+}
+
+.landing-header {
+  display: flex;
+  padding: 30px 0 20px 8vw;
+  align-items: center;
+}
+
+.landing-headerTitle {
+    color: #fff;
+    display: inline-block;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: normal;
+    text-transform: uppercase;
+    vertical-align: middle;
+    padding: 0 0 0 14px;
+}
+
+.content {
+  height: 80vh;
+  width:84vw;
+  background-color: white;
+  margin: auto;
+  box-shadow: 0 17px 50px 0 rgba(0,0,0,.19), 0 12px 15px 0 rgba(0,0,0,.24);
+}
+

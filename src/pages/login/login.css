@@ -1,0 +1,67 @@
+.whatsapp_login {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;    
+}
+
+.whatsapp_login > img {
+    object-fit: cover;
+    width: 100%;
+    height: 100%;
+}
+
+.whatsapp_login__header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    height: auto;
+    position: absolute;
+    bottom: 14%;
+}
+.whatsapp_login__logo{
+    height: 100px;
+    width: 100px;
+}
+.whatsapp_login__welcome {
+    font-weight: 600;
+}
+
+.whatsapp_login__google > .MuiButton-label > img {
+    height: auto;
+    width: 7%;
+    padding-left: 10px;
+    min-width: 25px;
+}
+
+.whatsapp_login__header > .whatsapp_login__google {
+    width: 25%;
+    border: 1px solid #ccc;
+    color: white;
+    font-weight: 700;
+    font-weight: 500;
+    letter-spacing: 3px;
+}
+.whatsapp_login__header > .whatsapp_login__google:hover {
+    border: 1px solid #ccc;
+    background-color: white;
+    color: black;
+}
+
+@media (max-width:414px) {
+    .whatsapp_login__header > .whatsapp_login__google {
+        min-width: 47%;
+    }
+} 
+@media (min-width:1130px) {
+    .whatsapp_login__header {
+        bottom: 10%;
+    }
+}
+
+@media (min-width:1024px) and (min-height:1366px) {
+    .whatsapp_login__header {
+        bottom: 20%;
+    }
+}
