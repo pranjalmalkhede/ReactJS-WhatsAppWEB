@@ -16,15 +16,16 @@ import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
-import Tooltip from '@material-ui/core/Tooltip';
+import Tooltip from "@material-ui/core/Tooltip";
 import { withStyles } from "@material-ui/core/styles";
+import { motion, AnimatePresence } from "framer-motion";
 
 import "./UI.css";
 
 const BlueOnGreenTooltip = withStyles({
   tooltip: {
-   fontSize:"15px"
-  }
+    fontSize: "15px",
+  },
 })(Tooltip);
 
 const UI = () => {
@@ -38,8 +39,6 @@ const UI = () => {
   const [showEmojiTray, toggleEmojiTray] = useState(false);
   const { firestore } = firebase;
   const [open, setopen] = useState(false);
-
-
 
   useEffect(() => {
     firestore()
@@ -98,17 +97,25 @@ const UI = () => {
           !search || contact.name.toLowerCase().includes(search.toLowerCase())
         );
       });
-      let newChat = result.filter(d=>d.messages.length===0)
-      let oldChat = result.filter(d=>d.messages.length!==0)
-  
-      let result1 =  oldChat.sort((a,b)=>{
-        const maxTsA = Math.max(...a.messages.map((m) => (new Date(m.date)).getTime()))
-        const lastMsgA = a.messages.find((m) =>(new Date(m.date)).getTime() === maxTsA)
-        const maxTsB = Math.max(...b.messages.map((m) => (new Date(m.date)).getTime()))
-        const lastMsgB = b.messages.find((m) =>(new Date(m.date)).getTime() === maxTsB)
-        return (new Date(lastMsgB.date)) - (new Date(lastMsgA.date))
-      })
-      let finalChat = result1.concat(newChat)
+      let newChat = result.filter((d) => d.messages.length === 0);
+      let oldChat = result.filter((d) => d.messages.length !== 0);
+
+      let result1 = oldChat.sort((a, b) => {
+        const maxTsA = Math.max(
+          ...a.messages.map((m) => new Date(m.date).getTime())
+        );
+        const lastMsgA = a.messages.find(
+          (m) => new Date(m.date).getTime() === maxTsA
+        );
+        const maxTsB = Math.max(
+          ...b.messages.map((m) => new Date(m.date).getTime())
+        );
+        const lastMsgB = b.messages.find(
+          (m) => new Date(m.date).getTime() === maxTsB
+        );
+        return new Date(lastMsgB.date) - new Date(lastMsgA.date);
+      });
+      let finalChat = result1.concat(newChat);
       setFilterContacts(finalChat);
     };
     filterContacts();
@@ -133,8 +140,6 @@ const UI = () => {
     });
     setMessage("");
   };
-
-
 
   const logout = () => {
     firebase.auth().signOut();
@@ -173,20 +178,32 @@ const UI = () => {
         <header>
           <Avatar user={mainUser} />
           <h4>Hi, {mainUser?.name}!</h4>
-          {mainUser?.name && <BlueOnGreenTooltip title="logout"><Logout onClick={() => setopen(true)} /></BlueOnGreenTooltip>}
+          {mainUser?.name && (
+            <BlueOnGreenTooltip title="logout">
+              <Logout onClick={() => setopen(true)} />
+            </BlueOnGreenTooltip>
+          )}
         </header>
         <Search search={search} setSearch={setSearch} />
         <div className="contact-boxes">
-          {filteredContacts.map(({ contact, messages }) => (
-            <ContactBox
-              contact={contact}
-              key={contact.id}
-              setContactSelected={setContactSelected}
-              setMessage={setMessage}
-              messages={messages}
-              onClick={() => toggleEmojiTray(false)}
-            />
-          ))}
+          <AnimatePresence>
+            {filteredContacts.map(({ contact, messages }) => (
+              <motion.div
+                key={contact.id}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.4 }}
+                positionTransition
+              >
+                <ContactBox
+                  contact={contact}
+                  setContactSelected={setContactSelected}
+                  setMessage={setMessage}
+                  messages={messages}
+                  onClick={() => toggleEmojiTray(false)}
+                />
+              </motion.div>
+            ))}
+          </AnimatePresence>
         </div>
       </aside>
       {contactSelected.id ? (

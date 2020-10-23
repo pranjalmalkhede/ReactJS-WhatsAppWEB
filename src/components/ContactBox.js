@@ -18,7 +18,7 @@ export default function ContactBox({ contact, setContactSelected, messages, onCl
                     { messages.length!==0 && <span className="time-mark">{(new Date(lastMsg.date)).toLocaleDateString()}</span>}
                 </div>
                 {lastMsg && <div className="last-msg">
-                    <img src={doubleCheck} alt="" className="icon-small" />
+                    { lastMsg.sender !== contact.id && <img src={doubleCheck} alt="" className="icon-small" />}
                     <span className="text">{truncate(lastMsg.msg, 30)}</span>
                 </div>}
             </div>
