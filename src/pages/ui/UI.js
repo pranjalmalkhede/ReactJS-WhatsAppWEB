@@ -201,6 +201,7 @@ const UI = () => {
             pushMessage={pushMessage}
             showEmojiTray={showEmojiTray}
             toggleEmojiTray={toggleEmojiTray}
+            contactSelected={contactSelected}
           />
         </main>
       ) : (

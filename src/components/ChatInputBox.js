@@ -1,16 +1,16 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { ReactComponent as EmojiIcon } from "../assets/tag_faces.svg";
 import { ReactComponent as YourSvg } from "../assets/send.svg";
 
 import { Picker } from "emoji-mart";
 import "emoji-mart/css/emoji-mart.css";
-import Tooltip from '@material-ui/core/Tooltip';
+import Tooltip from "@material-ui/core/Tooltip";
 import { withStyles } from "@material-ui/core/styles";
 
 const BlueOnGreenTooltip = withStyles({
   tooltip: {
-   fontSize:"15px"
-  }
+    fontSize: "15px",
+  },
 })(Tooltip);
 
 const ChatInputBox = ({
@@ -19,7 +19,14 @@ const ChatInputBox = ({
   pushMessage,
   showEmojiTray,
   toggleEmojiTray,
+  contactSelected
 }) => {
+  const inputRef= useRef(null)
+
+  useEffect(()=>{
+    inputRef.current.focus()
+  },[contactSelected])
+
   function handleKeyDown(e) {
     if (e.key === "Enter" && message) {
       pushMessage();
@@ -32,21 +39,18 @@ const ChatInputBox = ({
   return (
     <div className="chat-input-box">
       <div className="icon emoji-selector">
-      <BlueOnGreenTooltip title="emojis">
-      <EmojiIcon onClick={() => toggleEmojiTray(!showEmojiTray)} />
-      </BlueOnGreenTooltip>
-        
+        <BlueOnGreenTooltip title="emojis">
+          <EmojiIcon onClick={() => toggleEmojiTray(!showEmojiTray)} />
+        </BlueOnGreenTooltip>
+
         <div className={`emoji-${showEmojiTray ? "show" : "hide"}`}>
-          <Picker
-            native
-            showPreview={false}
-            onSelect={selectEmoji}
-          />
+          <Picker native showPreview={false} onSelect={selectEmoji} />
         </div>
       </div>
 
       <div className="chat-input">
         <input
+          ref={inputRef}
           type="text"
           placeholder="Type a message"
           value={message}
@@ -55,15 +59,15 @@ const ChatInputBox = ({
         />
       </div>
       <BlueOnGreenTooltip title="send">
-      <div
-        className="icon send"
-        onClick={() => {
-          pushMessage();
-          toggleEmojiTray();
-        }}
-      >
-        {<YourSvg />}
-      </div>
+        <div
+          className="icon send"
+          onClick={() => {
+            pushMessage();
+            toggleEmojiTray();
+          }}
+        >
+          {<YourSvg />}
+        </div>
       </BlueOnGreenTooltip>
     </div>
   );
