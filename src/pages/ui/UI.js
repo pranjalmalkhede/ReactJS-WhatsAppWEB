@@ -37,11 +37,58 @@ const UI = () => {
   const [search, setSearch] = useState("");
   const [filteredContacts, setFilterContacts] = useState([]);
   const [showEmojiTray, toggleEmojiTray] = useState(false);
-  const { firestore } = firebase;
   const [open, setopen] = useState(false);
 
   useEffect(() => {
-    firestore()
+    for (const user in filteredContacts) {
+      let collectionName = getCollectionName(
+        mainUser.id,
+        filteredContacts[user].contact.id
+      );
+      if (filteredContacts[user].messages.length > 0) {
+        filteredContacts[user].messages.forEach((msg) => {
+          if (
+            mainUser &&
+            msg?.status === "sent" &&
+            msg.sender !== mainUser.id
+          ) {
+            firebase
+              .firestore()
+              .collection(collectionName)
+              .doc(msg.uid)
+              .update({ status: "received" });
+          }
+        });
+      }
+    }
+    return () => {};
+  }, [filteredContacts, mainUser]);
+
+  useEffect(() => {
+    if (currentMessages.length > 0) {
+      currentMessages.forEach((msg) => {
+        if (
+          msg.sender !== mainUser.id &&
+          msg.status !== "sent" &&
+          msg.status === "received"
+        ) {
+          firebase
+            .firestore()
+            .collection(getCollectionName(msg.sender, msg.receiver))
+            .doc(msg.uid)
+            .update({ status: "read" });
+        }
+      });
+    }
+
+    return () => {};
+  }, [currentMessages, mainUser.id]);
+
+  useEffect(() => {
+    var unsubscribe1 = null;
+    var unsubscribe2 = null;
+    unsubscribe1 = firebase
+      .firestore()
       .collection("whatsapp-users")
       .onSnapshot((users) => {
         let userData = users.docs
@@ -61,7 +108,7 @@ const UI = () => {
           } else {
             collectionName = d.id + ":" + mainUser.id;
           }
-          firebase
+          unsubscribe2 = firebase
             .firestore()
             .collection(collectionName)
             .orderBy("dateCreated", "desc")
@@ -86,7 +133,12 @@ const UI = () => {
             });
         });
       });
-  }, [dispatch, firestore, mainUser]);
+
+    return () => {
+      unsubscribe1 && unsubscribe1();
+      unsubscribe2 && unsubscribe2();
+    };
+  }, [dispatch, mainUser]);
 
   useEffect(() => {
     const currContact = data.find((d) => d.contact.id === contactSelected.id);
@@ -119,6 +171,7 @@ const UI = () => {
       setFilterContacts(finalChat);
     };
     filterContacts();
+    return () => {};
   }, [contactSelected, data, search]);
 
   const pushMessage = () => {
@@ -137,15 +190,26 @@ const UI = () => {
       receiver: contactSelected.id,
       date: new Date().toString(),
       dateCreated: firebase.firestore.FieldValue.serverTimestamp(),
+      status: "sent",
     });
     setMessage("");
   };
 
   const logout = () => {
-    firebase.auth().signOut();
     dispatch({
       type: actionTypes.REMOVE_MAIN_USER,
     });
+    firebase.auth().signOut();
+  };
+
+  const getCollectionName = (mainUserId, otherId) => {
+    return mainUserId < otherId
+      ? mainUserId + ":" + otherId
+      : otherId + ":" + mainUserId;
+  };
+
+  const handleSetContactSelected = (contact) => {
+    setContactSelected(contact);
   };
 
   return (
@@ -196,7 +260,7 @@ const UI = () => {
               >
                 <ContactBox
                   contact={contact}
-                  setContactSelected={setContactSelected}
+                  setContactSelected={handleSetContactSelected}
                   setMessage={setMessage}
                   messages={messages}
                   onClick={() => toggleEmojiTray(false)}

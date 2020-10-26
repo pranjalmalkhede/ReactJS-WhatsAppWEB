@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "./login.css";
 
 import Button from "@material-ui/core/Button";
@@ -13,6 +13,24 @@ const Login = () => {
   const { auth, firestore } = firebase;
   const [, dispatch] = useStateValue();
   const history = useHistory();
+  const [users, setusers] = useState([]);
+
+  useEffect(() => {
+    let unsubscribe = firestore()
+      .collection("whatsapp-users")
+      .onSnapshot((user) => {
+        let data = user.docs.map((usr) => {
+          return {
+            ...usr.data(),
+            id: usr.id,
+          };
+        });
+        setusers(data);
+      });
+    return () => {
+      unsubscribe();
+    };
+  }, [firestore]);
 
   const signIn = async (e) => {
     e.preventDefault();
@@ -20,31 +38,25 @@ const Login = () => {
       new firebase.auth.GoogleAuthProvider()
     );
 
-    firestore()
-      .collection("whatsapp-users")
-      .onSnapshot((users) => {
-        // console.log(users);
-        let check = users.docs.findIndex(
-          (user) => user.data().email === data.user.email
-        );
-        let user = {
-          name: data.user.displayName,
-          email: data.user.email,
-          avatar: data.user.photoURL,
-          id: data.user.uid,
-          dateCreated: new Date(),
-        };
-        if (check < 0) {
-          firestore().collection("whatsapp-users").add(user);
-        }
-        if (user) {
-          dispatch({
-            type: actionTypes.SET_MAIN_USER,
-            payload: user,
-          });
-          history.push("/");
-        }
+    let check = users?.findIndex((user) => user.email === data.user.email);
+    let user = {
+      name: data.user.displayName,
+      email: data.user.email,
+      avatar: data.user.photoURL,
+      id: data.user.uid,
+      dateCreated: new Date(),
+    };
+    if (check < 0) {
+      console.log("ADD USER to DATABASE");
+      firestore().collection("whatsapp-users").add(user);
+    }
+    if (user) {
+      dispatch({
+        type: actionTypes.SET_MAIN_USER,
+        payload: user,
       });
+      history.push("/");
+    }
   };
   return (
     <div className="whatsapp_login">

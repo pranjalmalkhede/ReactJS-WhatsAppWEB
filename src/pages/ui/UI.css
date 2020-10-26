@@ -1,3 +1,33 @@
+.contactbox__unseen {
+    background-color: rgba(0 ,230 ,118);
+    height: 22px;
+    width: 22px;
+    border-radius: 999px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-size: smaller;
+    font-weight: 600;
+}
+
+.greenColor {
+    color: rgba(0 ,230 ,118) !important;
+}
+
+.unseenBold {
+    font-weight: 600 !important;
+}
+
+
+.contactbox__info {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding-left:2px;
+}
 .chat-input > input {
     width: 99%;
     padding: 0.5rem 5px;
@@ -96,7 +126,7 @@ main {
 }
 
 .avatar {
-    height: 2rem;
+    height: 40px;
     border-radius: 50%;
     margin: 0 0.75rem 0 0;
 }
@@ -153,13 +183,13 @@ main header {
 }
 .text {
     color: rgba(0, 0, 0, 0.8);
-    font-size: 13px;
+    font-size: 15px;
 }
 
 .avatar-title {
     color: #000;
     font-size: 16px;
-    font-weight: normal;
+    font-weight: 400;
     margin: 0 !important;
 }
 .avatar-component {
