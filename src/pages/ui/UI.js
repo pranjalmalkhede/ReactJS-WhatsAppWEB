@@ -305,6 +305,7 @@ const UI = () => {
                   setMessage={setMessage}
                   messages={messages}
                   onClick={() => toggleEmojiTray(false)}
+                  contactSelected={contactSelected}
                 />
               </motion.div>
             ))}

@@ -9,6 +9,7 @@ export default function ContactBox({
   messages,
   onClick,
   setMessage,
+  contactSelected,
 }) {
   const maxTs =
     messages.length !== 0 &&
@@ -18,7 +19,8 @@ export default function ContactBox({
     messages.find((m) => new Date(m.date).getTime() === maxTs);
 
   let unSeenMsgCount = 0;
-  if (messages.length !== 0) {
+
+  if (contactSelected.id !== contact.id && messages.length !== 0) {
     messages.forEach((msg) => {
       if (msg.status === "received") {
         unSeenMsgCount += 1;
