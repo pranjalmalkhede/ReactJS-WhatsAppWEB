@@ -19,6 +19,7 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 import Tooltip from "@material-ui/core/Tooltip";
 import { withStyles } from "@material-ui/core/styles";
 import { motion, AnimatePresence } from "framer-motion";
+import Tick from "../../assets/whatsappweb.mp3";
 
 import "./UI.css";
 
@@ -38,6 +39,7 @@ const UI = () => {
   const [filteredContacts, setFilterContacts] = useState([]);
   const [showEmojiTray, toggleEmojiTray] = useState(false);
   const [open, setopen] = useState(false);
+  let audio = new Audio(Tick);
 
   useEffect(() => {
     for (const user in filteredContacts) {
@@ -184,14 +186,20 @@ const UI = () => {
     } else {
       dbcollection = contactSelected.id + ":" + mainUser.id;
     }
-    firebase.firestore().collection(dbcollection).add({
-      msg: message,
-      sender: mainUser.id,
-      receiver: contactSelected.id,
-      date: new Date().toString(),
-      dateCreated: firebase.firestore.FieldValue.serverTimestamp(),
-      status: "sent",
-    });
+    firebase
+      .firestore()
+      .collection(dbcollection)
+      .add({
+        msg: message,
+        sender: mainUser.id,
+        receiver: contactSelected.id,
+        date: new Date().toString(),
+        dateCreated: firebase.firestore.FieldValue.serverTimestamp(),
+        status: "sent",
+      })
+      .then(() => {
+        audio.play();
+      });
     setMessage("");
   };
 
