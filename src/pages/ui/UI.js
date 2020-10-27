@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 
 import Avatar from "../../components/Avatar";
 import ContactBox from "../../components/ContactBox";
@@ -20,6 +20,7 @@ import Tooltip from "@material-ui/core/Tooltip";
 import { withStyles } from "@material-ui/core/styles";
 import { motion, AnimatePresence } from "framer-motion";
 import Tick from "../../assets/whatsappweb.mp3";
+import MessageSent from "../../assets/1640.mp3";
 
 import "./UI.css";
 
@@ -39,8 +40,37 @@ const UI = () => {
   const [filteredContacts, setFilterContacts] = useState([]);
   const [showEmojiTray, toggleEmojiTray] = useState(false);
   const [open, setopen] = useState(false);
-  let audio = new Audio(Tick);
+  let msgReceive = new Audio(Tick);
+  let msgSent = new Audio(MessageSent);
 
+  const usePrevious = (value) => {
+    const ref = useRef();
+    useEffect(() => {
+      ref.current = value;
+    });
+    return ref.current;
+  };
+
+  const prevData = usePrevious(data);
+
+  //hook to play audio when new msg is received
+  useEffect(() => {
+    data.forEach(({ messages }, i) => {
+      if (messages.length > 0) {
+        if (
+          prevData[i].messages.length !== 0 &&
+          messages.length > prevData[i].messages.length &&
+          messages[0].sender !== mainUser.id &&
+          contactSelected !== null &&
+          contactSelected.id !== messages[0].sender
+        ) {
+          msgReceive.play();
+        }
+      }
+    });
+  }, [data, prevData, mainUser, contactSelected, msgReceive]);
+
+  //hook that will run and set message status to received so that other user will aware by seeing double tick icon
   useEffect(() => {
     for (const user in filteredContacts) {
       let collectionName = getCollectionName(
@@ -66,6 +96,7 @@ const UI = () => {
     return () => {};
   }, [filteredContacts, mainUser]);
 
+  //hook, when user click on any contact then it will update message status to read hence blue double tick will be displayed
   useEffect(() => {
     if (currentMessages.length > 0) {
       currentMessages.forEach((msg) => {
@@ -86,6 +117,7 @@ const UI = () => {
     return () => {};
   }, [currentMessages, mainUser.id]);
 
+  //hook for get all contacts and their messages for database
   useEffect(() => {
     var unsubscribe1 = null;
     var unsubscribe2 = null;
@@ -142,6 +174,7 @@ const UI = () => {
     };
   }, [dispatch, mainUser]);
 
+  //hook for sorting the contacts based on latest message (descending order)
   useEffect(() => {
     const currContact = data.find((d) => d.contact.id === contactSelected.id);
     setCurrentMessages((currContact && currContact.messages) || []);
@@ -198,7 +231,7 @@ const UI = () => {
         status: "sent",
       })
       .then(() => {
-        audio.play();
+        msgSent.play();
       });
     setMessage("");
   };
