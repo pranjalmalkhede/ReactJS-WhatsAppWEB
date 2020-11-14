@@ -210,7 +210,7 @@ const UI = () => {
   }, [contactSelected, data, search]);
 
   const pushMessage = () => {
-    if (message === "") {
+    if (!message.trim()) {
       return;
     }
 
