@@ -252,7 +252,7 @@ const UI = () => {
     <div className="whatsapp_content">
       <LogoutDialog open={open} logout={logout} setopen={setopen} />
       {true && (
-        <aside className={`${!showChatBox ? null : "left-hide"}`}>
+        <aside className={`${!showChatBox ? "" : "left-hide"}`}>
           <header>
             <Avatar user={mainUser} />
             <h4>Hi, {mainUser?.name}!</h4>
@@ -277,7 +277,7 @@ const UI = () => {
                     setContactSelected={handleSetContactSelected}
                     setMessage={setMessage}
                     messages={messages}
-                    onClick={() => toggleEmojiTray(false)}
+                    onToggleEmojiTray={() => toggleEmojiTray(false)}
                     contactSelected={contactSelected}
                     setShowChatBox={setShowChatBox}
                   />

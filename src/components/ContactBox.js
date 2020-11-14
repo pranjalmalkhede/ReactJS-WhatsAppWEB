@@ -7,7 +7,7 @@ export default function ContactBox({
   contact,
   setContactSelected,
   messages,
-  onClick,
+  onToggleEmojiTray,
   setMessage,
   contactSelected,
   setShowChatBox,
@@ -41,7 +41,7 @@ export default function ContactBox({
       className="contact-box"
       onClick={() => {
         setContactSelected(contact);
-        onClick();
+        onToggleEmojiTray();
         setMessage("");
         setShowChatBox(true);
       }}

@@ -136,7 +136,8 @@ main {
     background: #f7f7f7;
     display: flex;
     align-items: center;
-    padding: 0 0.75rem;
+    /* padding: 0 0.75rem; */
+    width: 100%;
 }
 
 .search input[type='text'] {
@@ -150,9 +151,10 @@ main {
     background: white;
     justify-content: center;
     align-items: center;
-    padding: 0% 4%;
+    padding: 0% 2%;
     border-radius: 999px;
-    width: -webkit-fill-available;
+    width: 90%;
+    margin: auto;
 }
 .contact-boxes {
     overflow-y: auto;
