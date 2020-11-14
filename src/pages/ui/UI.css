@@ -105,13 +105,13 @@ button.emoji-mart-emoji:focus{
 }
 
 aside {
-    width: 30%;
+    width: 30vw;
     display: flex;
     flex-direction: column;
 }
 
 main {
-    width: 70%;
+    width: 70vw;
     background: #e5ddd5;
     background-image: url(../../assets/chatbg.png);
     display: flex;
@@ -140,11 +140,19 @@ main {
 }
 
 .search input[type='text'] {
-    background-image: url(../../assets/search.svg);
-    background-repeat: no-repeat;
     background-size: 1rem, 1rem;
     background-position: 0.45rem 50%;
     padding-left: 2rem;
+}
+
+.search__input {
+    display: flex;
+    background: white;
+    justify-content: center;
+    align-items: center;
+    padding: 0% 4%;
+    border-radius: 999px;
+    width: -webkit-fill-available;
 }
 .contact-boxes {
     overflow-y: auto;
@@ -175,6 +183,7 @@ aside header {
 main header {
     justify-content: flex-start;
     padding: 0 1rem;
+    position: sticky;
 }
 
 .time-mark {
@@ -224,6 +233,19 @@ main header {
 aside header {
     padding: 0 0.75rem;
     border-right: 1px solid #e1e1e1;
+    position: relative;
+    justify-content: center;
+}
+
+
+aside header > div {
+    left: 1vw;
+    position: absolute;
+}
+
+aside header svg {
+    right: 1vw;
+    position: absolute;
 }
 
 .icon {
@@ -255,6 +277,7 @@ input:focus {
 .chat-input {
     width: 90%;
     /* margin-right: 3%; */
+    padding: 1px 10px;
 }
 .send {
     width: 5%;
@@ -311,13 +334,16 @@ input:focus {
     justify-content: center;
     align-items: center;
     flex-direction: column;
+    width: 70%;
 }
 .welcome h2 {
     margin-top: 2rem;
     font-weight: normal;
 }
 .welcome img {
-    width: 300px;
+    height: 50%;
+    object-fit: contain;
+    width: 100%;
 }
 
 .metadata {
@@ -346,3 +372,37 @@ input:focus {
     right: 0px;
 }
 
+main > header > svg {
+    display: none !important;
+}
+
+@media only screen and (max-width: 768px) {
+    aside {
+      width: 100vw;
+    }
+  
+    .welcome {
+      display: none;
+    }
+
+    main {
+        width: 100vw;
+    }
+
+    .left-show {
+        display: flex;
+    }
+
+    .left-hide {
+        display: none;
+    }
+
+    .emoji-show > section {
+        width: 57vw !important;
+    }
+
+    main > header > svg {
+        margin-right: 10px;
+        display: block !important;
+    }
+  }

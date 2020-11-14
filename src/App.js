@@ -1,5 +1,4 @@
-import React, { useEffect } from "react";
-import logo from "./assets/logo.svg";
+import React, { useEffect, useState } from "react";
 import "./App.css";
 
 import {
@@ -13,13 +12,15 @@ import UI from "./pages/ui/UI";
 import { useStateValue } from "./utils/stateprovider";
 import firebase from "./firebase";
 import { actionTypes } from "./utils/reducer";
+import Spinner from "./components/Spinner";
 
 function App() {
   const [{ mainUser }, dispatch] = useStateValue();
+  const [loading, setloading] = useState(false);
 
   useEffect(() => {
     // will only run once when the app component loads...
-
+    setloading(true);
     const unsubscribe = firebase.auth().onAuthStateChanged((authUser) => {
       if (authUser) {
         // the user just logged in / the user was logged in
@@ -39,6 +40,7 @@ function App() {
           payload: null,
         });
       }
+      setloading(false);
     });
 
     return () => {
@@ -47,23 +49,35 @@ function App() {
   }, [dispatch]);
 
   return (
-    <div className="App">
-      <div className="landing-header">
-        <img className="landing-headerLogo" src={logo} alt="whatsapp logo" />
-        <div className="landing-headerTitle">WhatsApp Web</div>
-      </div>
+    <>
+      {loading ? (
+        <Spinner />
+      ) : (
+        <>
+          <div className="App">
+            {/* <div className="landing-header">
+              <img
+                className="landing-headerLogo"
+                src={logo}
+                alt="whatsapp logo"
+              />
+              <div className="landing-headerTitle">WhatsApp Web</div>
+            </div> */}
 
-      <div className="content">
-        <Router>
-          <Switch>
-            {mainUser && <Route exact path="/" component={UI} />}
-            <Route exact path="/login" component={Login} />
-          </Switch>
-          {!mainUser && <Redirect to="/login" />}
-          {mainUser && <Redirect to="/" />}
-        </Router>
-      </div>
-    </div>
+            <div className="content">
+              <Router>
+                <Switch>
+                  {mainUser && <Route exact path="/" component={UI} />}
+                  <Route exact path="/login" component={Login} />
+                </Switch>
+                {!mainUser && <Redirect to="/login" />}
+                {mainUser && <Redirect to="/" />}
+              </Router>
+            </div>
+          </div>
+        </>
+      )}
+    </>
   );
 }
 

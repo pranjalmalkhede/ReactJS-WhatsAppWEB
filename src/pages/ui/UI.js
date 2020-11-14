@@ -9,13 +9,7 @@ import Welcome from "../../components/Welcome";
 import { useStateValue } from "../../utils/stateprovider";
 import firebase from "../../firebase";
 import { actionTypes } from "../../utils/reducer";
-import { ReactComponent as Logout } from "../../assets/logout.svg";
-import Button from "@material-ui/core/Button";
-import Dialog from "@material-ui/core/Dialog";
-import DialogActions from "@material-ui/core/DialogActions";
-import DialogContent from "@material-ui/core/DialogContent";
-import DialogContentText from "@material-ui/core/DialogContentText";
-import DialogTitle from "@material-ui/core/DialogTitle";
+import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 import Tooltip from "@material-ui/core/Tooltip";
 import { withStyles } from "@material-ui/core/styles";
 import { motion, AnimatePresence } from "framer-motion";
@@ -23,6 +17,8 @@ import Tick from "../../assets/whatsappweb.mp3";
 import MessageSent from "../../assets/1640.mp3";
 
 import "./UI.css";
+import LogoutDialog from "../../components/LogoutDialog";
+import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 
 const BlueOnGreenTooltip = withStyles({
   tooltip: {
@@ -40,6 +36,8 @@ const UI = () => {
   const [filteredContacts, setFilterContacts] = useState([]);
   const [showEmojiTray, toggleEmojiTray] = useState(false);
   const [open, setopen] = useState(false);
+  // const [toggle, setToggle] = useState(true);
+  const [showChatBox, setShowChatBox] = useState(false);
   let msgReceive = new Audio(Tick);
   let msgSent = new Audio(MessageSent);
 
@@ -200,7 +198,9 @@ const UI = () => {
         const lastMsgB = b.messages.find(
           (m) => new Date(m.date).getTime() === maxTsB
         );
-        return new Date(lastMsgB.date) - new Date(lastMsgA.date);
+        return (
+          new Date(lastMsgB.date).getTime() - new Date(lastMsgA.date).getTime()
+        );
       });
       let finalChat = result1.concat(newChat);
       setFilterContacts(finalChat);
@@ -213,15 +213,10 @@ const UI = () => {
     if (message === "") {
       return;
     }
-    let dbcollection = null;
-    if (mainUser.id < contactSelected.id) {
-      dbcollection = mainUser.id + ":" + contactSelected.id;
-    } else {
-      dbcollection = contactSelected.id + ":" + mainUser.id;
-    }
+
     firebase
       .firestore()
-      .collection(dbcollection)
+      .collection(getCollectionName(mainUser.id, contactSelected.id))
       .add({
         msg: message,
         sender: mainUser.id,
@@ -255,66 +250,48 @@ const UI = () => {
 
   return (
     <div className="whatsapp_content">
-      <Dialog
-        open={open}
-        onClose={() => setopen(false)}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
-        <DialogTitle id="alert-dialog-title">
-          {"Do you want to Logout?"}
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            On clicking <b>Logout</b>, you will be logged out from the WhatsApp
-            WEB. If you don't want to logout, click <b>Cancel</b>
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setopen(false)} color="primary">
-            cancel
-          </Button>
-          <Button variant="contained" onClick={logout} color="primary">
-            Logout
-          </Button>
-        </DialogActions>
-      </Dialog>
-      <aside>
-        <header>
-          <Avatar user={mainUser} />
-          <h4>Hi, {mainUser?.name}!</h4>
-          {mainUser?.name && (
-            <BlueOnGreenTooltip title="logout">
-              <Logout onClick={() => setopen(true)} />
-            </BlueOnGreenTooltip>
-          )}
-        </header>
-        <Search search={search} setSearch={setSearch} />
-        <div className="contact-boxes">
-          <AnimatePresence>
-            {filteredContacts.map(({ contact, messages }) => (
-              <motion.div
-                key={contact.id}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.4 }}
-                positionTransition
-              >
-                <ContactBox
-                  contact={contact}
-                  setContactSelected={handleSetContactSelected}
-                  setMessage={setMessage}
-                  messages={messages}
-                  onClick={() => toggleEmojiTray(false)}
-                  contactSelected={contactSelected}
-                />
-              </motion.div>
-            ))}
-          </AnimatePresence>
-        </div>
-      </aside>
-      {contactSelected.id ? (
-        <main>
+      <LogoutDialog open={open} logout={logout} setopen={setopen} />
+      {true && (
+        <aside className={`${!showChatBox ? null : "left-hide"}`}>
           <header>
+            <Avatar user={mainUser} />
+            <h4>Hi, {mainUser?.name}!</h4>
+            {mainUser?.name && (
+              <BlueOnGreenTooltip title="logout">
+                <ExitToAppIcon onClick={() => setopen(true)} />
+              </BlueOnGreenTooltip>
+            )}
+          </header>
+          <Search search={search} setSearch={setSearch} />
+          <div className="contact-boxes">
+            <AnimatePresence>
+              {filteredContacts.map(({ contact, messages }) => (
+                <motion.div
+                  key={contact.id}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.4 }}
+                  positionTransition
+                >
+                  <ContactBox
+                    contact={contact}
+                    setContactSelected={handleSetContactSelected}
+                    setMessage={setMessage}
+                    messages={messages}
+                    onClick={() => toggleEmojiTray(false)}
+                    contactSelected={contactSelected}
+                    setShowChatBox={setShowChatBox}
+                  />
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </div>
+        </aside>
+      )}
+
+      {showChatBox && contactSelected.id ? (
+        <main className={`${showChatBox ? "left-show" : ""}`}>
+          <header>
+            <ArrowBackIcon onClick={() => setShowChatBox(false)} />
             <Avatar user={contactSelected} showName />
           </header>
           <MessagesBox messages={currentMessages} />

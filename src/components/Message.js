@@ -13,7 +13,9 @@ const Message = ({ message }) => {
     >
       {message.msg}
       <div className="metadata">
-        <span className="date">{new Date(message.date).toLocaleString()}</span>
+        <span className="date">
+          {message?.dateCreated?.toDate().toLocaleString()}
+        </span>
         {mainUser.id === message.sender &&
           (message.status === "sent" ? (
             <SingleCheck />

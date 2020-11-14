@@ -1,7 +1,6 @@
 import React, { useEffect, useRef } from "react";
-import { ReactComponent as EmojiIcon } from "../assets/tag_faces.svg";
-import { ReactComponent as YourSvg } from "../assets/send.svg";
-
+import SendIcon from "@material-ui/icons/Send";
+import TagFacesIcon from "@material-ui/icons/TagFaces";
 import { Picker } from "emoji-mart";
 import "emoji-mart/css/emoji-mart.css";
 import Tooltip from "@material-ui/core/Tooltip";
@@ -19,13 +18,13 @@ const ChatInputBox = ({
   pushMessage,
   showEmojiTray,
   toggleEmojiTray,
-  contactSelected
+  contactSelected,
 }) => {
-  const inputRef= useRef(null)
+  const inputRef = useRef(null);
 
-  useEffect(()=>{
-    inputRef.current.focus()
-  },[contactSelected])
+  useEffect(() => {
+    inputRef.current.focus();
+  }, [contactSelected]);
 
   function handleKeyDown(e) {
     if (e.key === "Enter" && message) {
@@ -40,7 +39,7 @@ const ChatInputBox = ({
     <div className="chat-input-box">
       <div className="icon emoji-selector">
         <BlueOnGreenTooltip title="emojis">
-          <EmojiIcon onClick={() => toggleEmojiTray(!showEmojiTray)} />
+          <TagFacesIcon onClick={() => toggleEmojiTray(!showEmojiTray)} />
         </BlueOnGreenTooltip>
 
         <div className={`emoji-${showEmojiTray ? "show" : "hide"}`}>
@@ -66,7 +65,7 @@ const ChatInputBox = ({
             toggleEmojiTray();
           }}
         >
-          {<YourSvg />}
+          {<SendIcon />}
         </div>
       </BlueOnGreenTooltip>
     </div>

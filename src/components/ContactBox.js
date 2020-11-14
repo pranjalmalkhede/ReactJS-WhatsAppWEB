@@ -10,6 +10,7 @@ export default function ContactBox({
   onClick,
   setMessage,
   contactSelected,
+  setShowChatBox,
 }) {
   const maxTs =
     messages.length !== 0 &&
@@ -42,6 +43,7 @@ export default function ContactBox({
         setContactSelected(contact);
         onClick();
         setMessage("");
+        setShowChatBox(true);
       }}
     >
       <Avatar user={contact} />

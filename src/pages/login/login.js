@@ -7,16 +7,16 @@ import { actionTypes } from "../../utils/reducer";
 import { useStateValue } from "../../utils/stateprovider";
 import { useHistory } from "react-router-dom";
 import google from "../../assets/google.png";
-import whatsapp from "../../assets/whatsapp.png";
+import { ReactComponent as WhatsappLogo } from "../../assets/logo.svg";
 
 const Login = () => {
-  const { auth, firestore } = firebase;
   const [, dispatch] = useStateValue();
   const history = useHistory();
   const [users, setusers] = useState([]);
 
   useEffect(() => {
-    let unsubscribe = firestore()
+    let unsubscribe = firebase
+      .firestore()
       .collection("whatsapp-users")
       .onSnapshot((user) => {
         let data = user.docs.map((usr) => {
@@ -30,13 +30,13 @@ const Login = () => {
     return () => {
       unsubscribe();
     };
-  }, [firestore]);
+  }, [dispatch]);
 
   const signIn = async (e) => {
     e.preventDefault();
-    let data = await auth().signInWithPopup(
-      new firebase.auth.GoogleAuthProvider()
-    );
+    let data = await firebase
+      .auth()
+      .signInWithPopup(new firebase.auth.GoogleAuthProvider());
 
     let check = users?.findIndex((user) => user.email === data.user.email);
     let user = {
@@ -48,7 +48,7 @@ const Login = () => {
     };
     if (check < 0) {
       console.log("ADD USER to DATABASE");
-      firestore().collection("whatsapp-users").add(user);
+      firebase.firestore().collection("whatsapp-users").add(user);
     }
     if (user) {
       dispatch({
@@ -60,7 +60,7 @@ const Login = () => {
   };
   return (
     <div className="whatsapp_login">
-      <img src={whatsapp} alt="whatsapp" />
+      <WhatsappLogo />
       <div className="whatsapp_login__header">
         <Button onClick={signIn} className="whatsapp_login__google">
           SignIn with <img src={google} alt="google logo"></img>
